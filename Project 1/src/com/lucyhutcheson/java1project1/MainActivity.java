@@ -10,11 +10,12 @@
  */
 package com.lucyhutcheson.java1project1;
 
-import android.R.bool;
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Context;
 import android.view.Menu;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -64,7 +65,7 @@ public class MainActivity extends Activity {
         tiresField.setHint("Do you need new tires? True/False");
         
         
-        // Button
+        // Calculate Button
         Button b = new Button(this);
         b.setText("Calculate Tire Price");
         //ll.addView(b);
@@ -72,6 +73,11 @@ public class MainActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
+
+				// Dismiss the keyboard so we can see our text
+				InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(tiresField.getWindowToken(), 0);
+				
 				// Setup variables to be used in this function
 				int numTires = getResources().getInteger(R.integer.numTires);
 				int tirePrice = getResources().getInteger(R.integer.tirePrice);
@@ -79,22 +85,26 @@ public class MainActivity extends Activity {
 				tireString = tiresField.getText().toString();
 				tireEntry = Boolean.parseBoolean(tireString);
 				
+				
 				// Calculate the total number of tires we have from the number of cars entered
 				totalTires = numTires*numCars;
 				
+				// Display a greeting
+				result.setText("Hello "+ nameField.getText().toString() + "!\r\nOur tires cost $"+tirePrice+" per tire.\r\n");
+
 				// Check if we need new tires and calculate price and display message
-				if (tireEntry = true)
+				if (tireEntry)
 				{
-					for (int i=0, j=numCars; i<j; i++)
+					for (int i=1, j=numCars+1; i<j; i++)
 					{
 						int perCar = numTires * tirePrice;
-						pricePerCar.setText("Car #"+ i + "= " + perCar + "\r\n");
+						pricePerCar.append("Car #"+ i + "= $" + perCar + "\r\n");
 					}
 					totalPrice = totalTires*tirePrice;
-					result.setText("Hello "+ nameField.getText().toString() + "!\r\nYour total tires are " + totalTires + ".\r\n" + "The total price to replace all those tires is $" + totalPrice + ".\r\n");
+					result.append("Your total number of tires is " + totalTires + ".\r\n" + "The total price to replace all those tires is $" + totalPrice + ".\r\n");
 				}
 				// If we don't need new tires, just display a message
-				else 
+				else if (!tireEntry)
 				{
 					result.setText("Hello "+ nameField.getText().toString() + "!\r\nYour total tires are " + totalTires + ".\r\n");
 				}
@@ -102,30 +112,48 @@ public class MainActivity extends Activity {
 			}
 		});
         
+        // Clear Button
+        Button c = new Button(this);
+        c.setText("Clear Text");
+        c.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+
+				// Empty result textView and pricePerCar textView
+				result.setText("");
+				pricePerCar.setText("");
+				// Empty out my fields for reuse
+				nameField.setText("");
+				tiresField.setText("");
+				carsField.setText("");		
+			}
+		});
+
         // Create the Layout for our app and setup the parameters
         LinearLayout form = new LinearLayout(this);
         form.setOrientation(LinearLayout.VERTICAL);
         lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         form.setLayoutParams(lp);
         
-        // Add text field and button to new layout
+        // Add text field and buttons to new layout
         form.addView(nameField);
         form.addView(carsField);
         form.addView(tiresField);
         form.addView(b);
+        form.addView(c);
         
         // Add new form layout to original view
         ll.addView(form);
         
-        // Create textView for resulting text string and add it to the view
+        // Create textViews for resulting text string and add it to the view
+        // Result TextView to hold calculations
         result = new TextView(this);
         ll.addView(result);
-        
+        // PricePerCar TextView to hold price of tires per car
         pricePerCar = new TextView(this);
         ll.addView(pricePerCar);
-        
-        
-        
+
         setContentView(ll);
         
     }
