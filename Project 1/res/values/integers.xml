@@ -1,0 +1,7 @@
+<resources>
+    
+    <integer name="numTires">4</integer>
+    <integer name="tirePrice">120</integer>
+
+    
+</resources>
