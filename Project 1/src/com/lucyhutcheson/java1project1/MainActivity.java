@@ -10,6 +10,7 @@
  */
 package com.lucyhutcheson.java1project1;
 
+import android.R.bool;
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
@@ -29,6 +30,11 @@ public class MainActivity extends Activity {
 	TextView result;
 	EditText nameField;
 	EditText tiresField;
+	TextView pricePerCar;
+	int totalTires;
+	int totalPrice;
+	String tireString;
+	boolean tireEntry;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,29 +61,44 @@ public class MainActivity extends Activity {
         nameField.setHint("Enter Your Name");
 
         tiresField = new EditText(this);
-        tiresField.setHint("Do you need new tires?");
+        tiresField.setHint("Do you need new tires? True/False");
         
         
         // Button
         Button b = new Button(this);
-        b.setText("Run App");
+        b.setText("Calculate Tire Price");
         //ll.addView(b);
         b.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
+				// Setup variables to be used in this function
 				int numTires = getResources().getInteger(R.integer.numTires);
-				
+				int tirePrice = getResources().getInteger(R.integer.tirePrice);
 				int numCars = Integer.parseInt(carsField.getText().toString());
+				tireString = tiresField.getText().toString();
+				tireEntry = Boolean.parseBoolean(tireString);
 				
-				if (tiresField.getText().toString() = "Yes")
+				// Calculate the total number of tires we have from the number of cars entered
+				totalTires = numTires*numCars;
+				
+				// Check if we need new tires and calculate price and display message
+				if (tireEntry = true)
 				{
-					
+					for (int i=0, j=numCars; i<j; i++)
+					{
+						int perCar = numTires * tirePrice;
+						pricePerCar.setText("Car #"+ i + "= " + perCar + "\r\n");
+					}
+					totalPrice = totalTires*tirePrice;
+					result.setText("Hello "+ nameField.getText().toString() + "!\r\nYour total tires are " + totalTires + ".\r\n" + "The total price to replace all those tires is $" + totalPrice + ".\r\n");
 				}
-				int totalTires = numTires*numCars;
+				// If we don't need new tires, just display a message
+				else 
+				{
+					result.setText("Hello "+ nameField.getText().toString() + "!\r\nYour total tires are " + totalTires + ".\r\n");
+				}
 				
-				result.setText("Total Tires: " + totalTires + "\r\n");
 			}
 		});
         
@@ -99,6 +120,10 @@ public class MainActivity extends Activity {
         // Create textView for resulting text string and add it to the view
         result = new TextView(this);
         ll.addView(result);
+        
+        pricePerCar = new TextView(this);
+        ll.addView(pricePerCar);
+        
         
         
         setContentView(ll);
