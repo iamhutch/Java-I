@@ -34,6 +34,9 @@ public class MainActivity extends Activity {
 	int totalTires;
 	int totalPrice;
 	boolean qualifySpecial;
+	String qualifyYes = "\r\nCongratulations!! You qualify for 4 free tires!";
+	String qualifyNo = "\r\nThank you for stopping by!! If you have more than 3 cars, you can qualify for 4 free tires!";
+	
 	
 	
     @Override
@@ -102,11 +105,11 @@ public class MainActivity extends Activity {
 
 					if (qualifySpecial)
 					{
-						result.append("\r\nCongratulations!! You qualify for 4 free tires!");
+						result.append(qualifyYes);
 					}
 					else if (!qualifySpecial)
 					{
-						result.append("\r\nThank you for stopping by!! If you have more than 3 cars, you can qualify for 4 free tires!");
+						result.append(qualifyNo);
 					}
 				} 
 				// If we don't have any cars, display message.
