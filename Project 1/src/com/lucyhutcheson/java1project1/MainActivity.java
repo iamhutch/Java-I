@@ -27,15 +27,14 @@ public class MainActivity extends Activity {
 	// setup Variables
 	LinearLayout ll;
 	LinearLayout.LayoutParams lp;
+	EditText nameField;
 	EditText carsField;
 	TextView result;
-	EditText nameField;
-	EditText tiresField;
 	TextView pricePerCar;
 	int totalTires;
 	int totalPrice;
-	String tireString;
-	boolean tireEntry;
+	boolean qualifySpecial;
+	
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,15 +59,12 @@ public class MainActivity extends Activity {
         
         nameField = new EditText(this);
         nameField.setHint("Enter Your Name");
+        
+        qualifySpecial = false;
 
-        tiresField = new EditText(this);
-        tiresField.setHint("Do you need new tires? True/False");
-        
-        
         // Calculate Button
         Button b = new Button(this);
         b.setText("Calculate Tire Price");
-        //ll.addView(b);
         b.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
@@ -76,15 +72,12 @@ public class MainActivity extends Activity {
 
 				// Dismiss the keyboard so we can see our text
 				InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-				imm.hideSoftInputFromWindow(tiresField.getWindowToken(), 0);
+				imm.hideSoftInputFromWindow(carsField.getWindowToken(), 0);
 				
 				// Setup variables to be used in this function
 				int numTires = getResources().getInteger(R.integer.numTires);
 				int tirePrice = getResources().getInteger(R.integer.tirePrice);
-				int numCars = Integer.parseInt(carsField.getText().toString());
-				tireString = tiresField.getText().toString();
-				tireEntry = Boolean.parseBoolean(tireString);
-				
+				int numCars = Integer.parseInt(carsField.getText().toString());				
 				
 				// Calculate the total number of tires we have from the number of cars entered
 				totalTires = numTires*numCars;
@@ -92,21 +85,34 @@ public class MainActivity extends Activity {
 				// Display a greeting
 				result.setText("Hello "+ nameField.getText().toString() + "!\r\nOur tires cost $"+tirePrice+" per tire.\r\n");
 
-				// Check if we need new tires and calculate price and display message
-				if (tireEntry)
+				// Check if we have a car and calculate price and display message
+				if (numCars > 0)
 				{
+					if (numCars > 3){
+						qualifySpecial = true;
+					}
 					for (int i=1, j=numCars+1; i<j; i++)
 					{
 						int perCar = numTires * tirePrice;
-						pricePerCar.append("Car #"+ i + "= $" + perCar + "\r\n");
+						pricePerCar.append("\r\nCar #"+ i + "= $" + perCar + "\r\n");
 					}
+					
 					totalPrice = totalTires*tirePrice;
 					result.append("Your total number of tires is " + totalTires + ".\r\n" + "The total price to replace all those tires is $" + totalPrice + ".\r\n");
-				}
-				// If we don't need new tires, just display a message
-				else if (!tireEntry)
+
+					if (qualifySpecial)
+					{
+						result.append("\r\nCongratulations!! You qualify for 4 free tires!");
+					}
+					else if (!qualifySpecial)
+					{
+						result.append("\r\nThank you for stopping by!! If you have more than 3 cars, you can qualify for 4 free tires!");
+					}
+				} 
+				// If we don't have any cars, display message.
+				else 
 				{
-					result.setText("Hello "+ nameField.getText().toString() + "!\r\nYour total tires are " + totalTires + ".\r\n");
+					result.append("You haven't entered any cars.  Please try again.");
 				}
 				
 			}
@@ -125,8 +131,9 @@ public class MainActivity extends Activity {
 				pricePerCar.setText("");
 				// Empty out my fields for reuse
 				nameField.setText("");
-				tiresField.setText("");
-				carsField.setText("");		
+				carsField.setText("");	
+				// Reset boolean
+				qualifySpecial = false;
 			}
 		});
 
@@ -139,7 +146,6 @@ public class MainActivity extends Activity {
         // Add text field and buttons to new layout
         form.addView(nameField);
         form.addView(carsField);
-        form.addView(tiresField);
         form.addView(b);
         form.addView(c);
         
