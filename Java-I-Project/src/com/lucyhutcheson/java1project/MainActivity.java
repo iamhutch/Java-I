@@ -18,7 +18,6 @@ import com.lucyhutcheson.data.Movie;
 import com.lucyhutcheson.lib.LayoutItems;
 import android.os.Bundle;
 import android.app.Activity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
@@ -36,9 +35,9 @@ public class MainActivity extends Activity {
 	TextView result;
 	TextView temp;
 	ArrayList<Movie> movies;
+	int id;	
+	String selected;
 	
-	private static final String TAG = "MyActivity";
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -77,7 +76,6 @@ public class MainActivity extends Activity {
 		// add radio group to layout
 		ll.addView(movieOptions);
 
-
 		// Add layout with buttons
 		LinearLayout movieBox = LayoutItems.singleEntryWithButton(this);
 		ll.addView(movieBox);
@@ -88,14 +86,10 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 
-				// Setup labels from our resource file of labels
-				//String nameLabel = getResources().getString(R.string.name);
-				//String ratingLabel = getResources().getString(R.string.rating);
-
-				int id = movieOptions.getCheckedRadioButtonId();
+				id = movieOptions.getCheckedRadioButtonId();
 				RadioButton rb = (RadioButton) findViewById(id);
-				String selected = rb.getText().toString();
-				Log.d(TAG, "selected=" + selected);
+				selected = rb.getText().toString();
+				//Log.d("MyLog", "selected=" + selected);
 				result.setText(JSON.readJSON(selected));
 			}
 		});        
@@ -113,9 +107,6 @@ public class MainActivity extends Activity {
 			}
 		});    
         
-
-
-
 		// Create textViews for resulting text string and add it to the view
         // Result TextView to hold calculations
         result = new TextView(this);
@@ -127,7 +118,6 @@ public class MainActivity extends Activity {
         ll.addView(temp);
 		
 		setContentView(ll);
-
 	
 	}
 

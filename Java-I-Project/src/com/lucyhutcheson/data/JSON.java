@@ -16,7 +16,7 @@ public class JSON {
 			// create query object to hold movies
 			JSONObject queryObject = new JSONObject();
 
-			// Create movie objects from enums
+			// Create movie objects from enum
 			for (sampleData movie : sampleData.values()) {
 				// Create another object to hold movies
 				JSONObject moviesObject = new JSONObject();
