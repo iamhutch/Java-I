@@ -7,16 +7,16 @@ public enum sampleData {
 	MOVIE4("A Hijacking", "R"),
 	MOVIE5("Unfinished Song", "PG-13");
 
-	private final String name;
+	private final String title;
 	private final String rating;
 	
-	private sampleData(String name, String rating){
-		this.name = name;
+	private sampleData(String title, String rating){
+		this.title = title;
 		this.rating = rating;
 	}
 	
-	public String setName(){
-		return name;
+	public String setTitle(){
+		return title;
 	}
 	
 	public String setRating(){

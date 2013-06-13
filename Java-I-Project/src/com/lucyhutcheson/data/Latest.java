@@ -2,38 +2,33 @@ package com.lucyhutcheson.data;
 
 public class Latest implements Movie {
 
-	String name;
-	double rating;
+	String title;
+	String rating;
 	
 	// create constructor
-	public Latest(String name, double rating) {
-		setName(name);
+	public Latest(String title, String rating) {
+		setTitle(title);
 		setRatings(rating);
 	}
 
 	@Override
-	public boolean setName(String name) {
-		// TODO Auto-generated method stub
-		this.name = name;
+	public boolean setTitle(String title) {
+		this.title = title;
 		return true;
 	}
 
-	@Override
-	public boolean setRatings(double rating) {
-		// TODO Auto-generated method stub
+	public boolean setRatings(String rating) {
 		this.rating = rating;
 		return true;
 	}
 
 	@Override
-	public String getName() {
-		// TODO Auto-generated method stub
-		return this.name;
+	public String getTitle() {
+		return this.title;
 	}
 
 	@Override
-	public double getRatings() {
-		// TODO Auto-generated method stub
+	public String getRatings() {
 		return this.rating;
 	}
 

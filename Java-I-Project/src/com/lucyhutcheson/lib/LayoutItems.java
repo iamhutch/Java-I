@@ -9,7 +9,6 @@ import android.widget.LinearLayout.LayoutParams;
 
 public class LayoutItems {
 
-
 	public static LinearLayout singleEntryWithButton(Context context){
 		LinearLayout ll = new LinearLayout(context);
 		// return the type of data we declared
@@ -18,11 +17,15 @@ public class LayoutItems {
 		ll.setLayoutParams(lp);
 				
 		Button latestBtn = new Button(context);
-		latestBtn.setText("Get the Latest Movies");
+        lp = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0.25f);
+		latestBtn.setText("Get Details for Selected Movie");
+		latestBtn.setLayoutParams(lp);
 		latestBtn.setId(1);
 		
 		Button saveBtn = new Button(context);
-		saveBtn.setText("Save Movies");
+        lp = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 0.25f);
+		saveBtn.setText("Save Movie Selection");
+		saveBtn.setLayoutParams(lp);
 		saveBtn.setId(2);
 
 		ll.addView(latestBtn);
