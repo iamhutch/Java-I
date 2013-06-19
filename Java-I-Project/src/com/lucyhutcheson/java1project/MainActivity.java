@@ -11,114 +11,88 @@
 
 package com.lucyhutcheson.java1project;
 
-import java.util.ArrayList;
-import com.lucyhutcheson.data.JSON;
-import com.lucyhutcheson.data.Latest;
-import com.lucyhutcheson.data.Movie;
-import com.lucyhutcheson.lib.LayoutItems;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.HashMap;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.lucyhutcheson.lib.FileFunctions;
+import com.lucyhutcheson.lib.MovieDisplay;
+import com.lucyhutcheson.lib.SavedDisplay;
+import com.lucyhutcheson.lib.SearchForm;
+import com.lucyhutcheson.lib.WebConnections;
+
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Context;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
-	// setup Variables
-	LinearLayout ll;
-	LinearLayout.LayoutParams lp;
-	RadioGroup movieOptions;
-	TextView result;
-	TextView temp;
-	ArrayList<Movie> movies;
-	int id;	
-	String selected;
+	// SETUP VARIABLES FOR CLASS
+	Context _context;
+	LinearLayout _appLayout;
+	SearchForm _search;
+	MovieDisplay _movie;
+	SavedDisplay _saved;
+	Boolean _connected = false;
+	HashMap<String, String> _history;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-        // initiate new linear layout
-        ll = new LinearLayout(this);
-        ll.setOrientation(LinearLayout.VERTICAL);
-        
-        // initiate layout params
-        lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        ll.setLayoutParams(lp);
-        
-		// setup text view and add a title
-        TextView tv = new TextView(this);
-        tv.setText("Latest Movies");
-        // Add TextView to our layout
-        ll.addView(tv);
-        
-		// create an array list of movies
-		movies = new ArrayList<Movie>();
-		movies.add(new Latest("MOVIE1", "PG-13"));
-		movies.add(new Latest("MOVIE2", "G"));
-		movies.add(new Latest("MOVIE3", "R"));
-		movies.add(new Latest("MOVIE4", "R"));
-		movies.add(new Latest("MOVIE5", "PG-13"));
-		
-		// String arrays in java need to have length specified when initialized
-		String[] latestList = new String[movies.size()];
-		for (int i= 0; i< movies.size(); i++){
-			// add names of movies to productNames string array
-			latestList[i] = movies.get(i).getTitle();
-		}
-		
-		// create radio group to add to layout
-		movieOptions = LayoutItems.getMovies(this, latestList);
-		// add radio group to layout
-		ll.addView(movieOptions);
+		_context = this;
+		_appLayout = new LinearLayout(this);
+		//_history = getHistory();
+		//Log.i("HISTORY READ", _history.toString());
 
-		// Add layout with buttons
-		LinearLayout movieBox = LayoutItems.singleEntryWithButton(this);
-		ll.addView(movieBox);
-
-		// Latest Movies Button
-		Button latestBtn = (Button) movieBox.findViewById(1);
-        latestBtn.setOnClickListener(new View.OnClickListener() {
+		_search = new SearchForm(_context, "Enter Movie Name", "Go");
+		
+		// ADD SEARCH HANDLER
+		Button searchButton = _search.getButton();
+		
+		searchButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-
-				id = movieOptions.getCheckedRadioButtonId();
-				RadioButton rb = (RadioButton) findViewById(id);
-				selected = rb.getText().toString();
-				//Log.d("MyLog", "selected=" + selected);
-				result.setText(JSON.readJSON(selected));
+				// GET MOVIE INFORMATION
+				getMovie(_search.getField().getText().toString());
+				//Log.i("CLICK HANDLER", _search.getField().getText().toString());
 			}
-		});        
-
-        // Save Movie selection Button 
-		Button saveBtn = (Button) movieBox.findViewById(2);
-		saveBtn.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-
-				// setup text view and add a title
-		        temp.setText("Save options will come later.");
-
-			}
-		});    
-        
-		// Create textViews for resulting text string and add it to the view
-        // Result TextView to hold calculations
-        result = new TextView(this);
-        ll.addView(result);
-        
-        // Create textViews for resulting text string and add it to the view
-        // Result TextView to hold calculations
-        temp = new TextView(this);
-        ll.addView(temp);
+		});
 		
-		setContentView(ll);
-	
+		// DETECTED NETWORK CONNECTION
+		_connected = WebConnections.getcConnectionStatus(_context);
+		if (_connected){
+			Log.i("NETWORK CONNECTION", WebConnections.getConnectionType(_context));
+		} 
+		
+		// ADD MOVIE DISPLAY
+		_movie = new MovieDisplay(_context);
+		
+		// ADD FAVORITES DISPLAY
+		_saved = new SavedDisplay(_context);
+		
+		// ADD VIEWS TO MAIN LAYOUT
+		_appLayout.addView(_search);
+		_appLayout.addView(_movie);
+		_appLayout.addView(_saved);
+		
+		// NEED TO TELL LAYOUT TO SHOW UP UNDERNEATH
+		_appLayout.setOrientation(LinearLayout.VERTICAL);
+		
+		setContentView(_appLayout);
 	}
 
 	@Override
@@ -128,4 +102,79 @@ public class MainActivity extends Activity {
 		return true;
 	}
 
+	// SETUP URL AND GET MOVIE DATA
+	private void getMovie(String movie){
+		String baseURL = "http://api.rottentomatoes.com/api/public/v1.0/movies.json?apikey=bcqq9h5yxut6nm9qz77h3w3h&page_limit=5&q=";
+		String mqs = movie; // MAKE SURE THAT MY MOVIE STRING IS ENCODED
+		String qs;
+		try {
+			// ENCODE MY MOVIE STRING
+			qs = URLEncoder.encode(mqs, "UTF-8");
+		} catch (Exception e) {
+			Log.e("BAD URL", "ENCODING PROBLEM");
+			qs = "";
+		}
+		URL finalURL;
+		try {
+			// SETUP MY STRING AND REQUEST IT
+			finalURL = new URL(baseURL+qs); 
+			MovieRequest qr = new MovieRequest();
+			qr.execute(finalURL); 
+		} catch (MalformedURLException e){
+			Log.e("BAD URL", "MALFORMED URL");
+			finalURL = null;
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private HashMap<String, String> getHistory(){
+		Object stored = FileFunctions.readObjectFile(_context, "history", false);
+		HashMap<String, String> history;
+		
+		// CHECK IF OBJECT EXISTS
+		if (stored == null){
+			Log.i("HISTORY", "NO HISTORY FILE FOUND");
+			history = new HashMap<String, String>();
+		} else {
+			//CAST HASHMAP
+			history = (HashMap<String, String>) stored;
+		}
+		return history;
+	}
+	
+	// SETUP MOVIEREQUEST TO HANDLE URL
+	private class MovieRequest extends AsyncTask<URL,Void, String> {
+
+		@Override
+		protected String doInBackground(URL... urls){ 
+			String response = "";
+			for(URL url: urls){
+				response = WebConnections.getURLStringResponse(url);
+			}
+			return response;
+		}
+		
+		@Override
+		protected void onPostExecute(String result){
+			Log.i("URL RESPONSE", result);
+			try {
+				JSONObject json = new JSONObject(result);
+				JSONArray results = json.getJSONArray("movies");
+				if(json.getString("total").compareTo("0")==0){
+					Toast toast = Toast.makeText(_context, "Movie Not Found", Toast.LENGTH_SHORT);
+					toast.show();
+				} else {
+					Toast toast = Toast.makeText(_context, "Great Movie: " + results.getJSONObject(0).getString("title"), Toast.LENGTH_SHORT);  
+					toast.show();
+					_history.put(results.getJSONObject(0).getString("title"), results.toString());
+					FileFunctions.storeObjectFile(_context, "history", _history, false);
+					FileFunctions.storeStringFile(_context, "temp", results.toString(), true);
+				}
+			} catch (JSONException e) {
+				Log.e("JSON", "JSON OBJECT EXCEPTION");
+				e.printStackTrace();
+			}
+		}
+	}
+	
 }
