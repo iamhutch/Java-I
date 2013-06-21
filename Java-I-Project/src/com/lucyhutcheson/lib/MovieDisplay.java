@@ -8,10 +8,10 @@ import com.lucyhutcheson.java1project.R;
 
 public class MovieDisplay extends GridLayout {
 
-	TextView _name;
-	TextView _rating;
-	TextView _year;
-	TextView _mpaa;
+	public TextView _name;
+	public TextView _rating;
+	public TextView _year;
+	public TextView _mpaa;
 	Context _context;
 
 	public MovieDisplay(Context context) {
@@ -48,6 +48,8 @@ public class MovieDisplay extends GridLayout {
 		this.addView(_year);
 		this.addView(mpaaLabel);
 		this.addView(_mpaa);
+
+		
 
 	}
 

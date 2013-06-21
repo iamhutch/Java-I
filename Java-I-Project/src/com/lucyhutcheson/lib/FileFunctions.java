@@ -79,6 +79,7 @@ public class FileFunctions {
 			int bytesRead = 0;
 			StringBuffer contentBuffer = new StringBuffer();
 			
+			// READ OUR DATA
 			while((bytesRead = bis.read(contentBytes)) != -1){
 				content = new String(contentBytes, 0, bytesRead);
 				contentBuffer.append(content);
@@ -107,15 +108,7 @@ public class FileFunctions {
 				file = new File(filename);
 				fis = context.openFileInput(filename);
 			}
-			BufferedInputStream bis = new BufferedInputStream(fis);
-			byte[] contentBytes = new byte[1024];
-			int bytesRead = 0;
-			StringBuffer contentBuffer = new StringBuffer();
 			
-			while((bytesRead = bis.read(contentBytes)) != -1){
-				content = new String(contentBytes, 0, bytesRead);
-				contentBuffer.append(content);
-			}
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			try{
 				content = (Object) ois.readObject();
@@ -132,6 +125,7 @@ public class FileFunctions {
 			return null;
 		} catch (IOException e){
 			Log.e("READ ERROR", "I/O ERROR");
+			return null;
 		}
 		// RETURN OBJECT
 		return content;
