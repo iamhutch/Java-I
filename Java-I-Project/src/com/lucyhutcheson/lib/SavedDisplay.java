@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -19,7 +18,6 @@ import android.widget.AdapterView.OnItemSelectedListener;
 public class SavedDisplay extends LinearLayout {
 
 	// SETUP VARIABLES
-	Button _remove;
 	Spinner _list; 
 	Context _context;
 	ArrayList<String> _movies = new ArrayList<String>();
@@ -77,13 +75,9 @@ public class SavedDisplay extends LinearLayout {
 		// UPDATE OUR SPINNER WITH MOVIES
 		updateSaved();
 		
-		// CREATE - BUTTON TO REMOVE MOVIE FROM FAVORITE DATA
-		_remove = new Button(_context);
-		_remove.setText("-");
 		
 		// ADD THE SPINNER AND BUTTON TO OUR LAYOUT
 		this.addView(_list);
-		this.addView(_remove);
 		
 		// SETUP LAYOUT PARAMETER FOR THIS SAVED DISPLAY TO BE AS WIDE AS PARENT
 		lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
