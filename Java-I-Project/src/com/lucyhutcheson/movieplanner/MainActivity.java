@@ -65,19 +65,19 @@ public class MainActivity extends Activity {
 		// ADD XML LAYOUT
 		setContentView(R.layout.form);
 
+		// SETUP VARIABLES AND VALUES
+		_context = this;
+		_favorites = getFavorites();
+		_temp = getTemp();
+
+		// INFLATE THE SEARCH FORM AND ADD TO THE CURRENT VIEW
 		RelativeLayout layout = (RelativeLayout) findViewById(R.id.mainlayout);
-		LayoutInflater inflater = (LayoutInflater)this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		LayoutInflater inflater = (LayoutInflater) this
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View view = inflater.inflate(R.layout.searchform, layout, false);
 		layout.addView(view);
 
-		
-		_context = this;
-		_favorites = getFavorites();
-		Log.i("HISTORY READ", _favorites.toString());
-		_temp = getTemp();
-		Log.i("TEMP READ", _temp.toString());
-
-		// SEARCH HANDLER
+		// SEARCH BUTTON AND HANDLER
 		Button searchButton = (Button) findViewById(R.id.searchButton);
 		searchButton.setOnClickListener(new OnClickListener() {
 			@Override
@@ -90,11 +90,10 @@ public class MainActivity extends Activity {
 
 				// GET MOVIE INFORMATION
 				getMovie(_searchField.getText().toString());
-				Log.i("CLICK HANDLER", _searchField.getText().toString());
 			}
 		});
 
-		// CLEAR HANDLER
+		// CLEAR BUTTON AND HANDLER
 		Button clearButton = (Button) findViewById(R.id.clearButton);
 		clearButton.setOnClickListener(new OnClickListener() {
 			@Override
@@ -109,12 +108,13 @@ public class MainActivity extends Activity {
 			}
 		});
 
-		// ADD TO FAVORITES
+		// ADD TO FAVORITES BUTTON AND HANDLER
 		Button addButton = (Button) findViewById(R.id.addFavButton);
 		addButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				// CHECK IF THERE IS A MOVIE TO SAVE BY CHECKING THE NAME TEXTVIEW VALUE
+				// CHECK IF THERE IS A MOVIE TO SAVE BY CHECKING THE NAME
+				// TEXTVIEW VALUE
 				if (((TextView) findViewById(R.id._name)).getText().length() > 0) {
 					// EMPTY OUT OUR FIELDS
 					clearFields(true);
@@ -125,9 +125,9 @@ public class MainActivity extends Activity {
 						JSONObject results = new JSONObject(_temp);
 						_favorites.put(results.getString("title"),
 								results.toString());
-						Log.i("FAVORITES CONTENT", _favorites.toString());
 						FileFunctions.storeObjectFile(_context, "favorites",
 								_favorites, false);
+						// ALERT USER OF SUCCESSFUL SAVE
 						Toast toast = Toast.makeText(_context,
 								"Movie successfully added to favorites.",
 								Toast.LENGTH_SHORT);
@@ -137,11 +137,12 @@ public class MainActivity extends Activity {
 						Log.e("JSON", "JSON OBJECT EXCEPTION");
 						e.printStackTrace();
 					}
+					// UPDATE OUR FAVORITES
 					updateSaved();
 				} else {
+					// ALERT USER THAT NO MOVIE WAS FOUND
 					Toast toast = Toast.makeText(_context,
-							"No movie found to save.",
-							Toast.LENGTH_SHORT);
+							"No movie found to save.", Toast.LENGTH_SHORT);
 					toast.show();
 				}
 			}
@@ -162,12 +163,12 @@ public class MainActivity extends Activity {
 			public void onItemSelected(AdapterView<?> parent, View v, int pos,
 					long id) {
 				String str = parent.getItemAtPosition(pos).toString();
+				// MAKE SURE THAT WE AREN'T SELECTING OUR PLACEHOLDER
 				if (!str.equals("View Favorites")) {
 					String selected = favList.get(str);
 					JSONObject json;
 					try {
 						json = new JSONObject(selected);
-						Log.i("FAVORITES SELECTED", json.getString("title"));
 						// GET DATA AND DISPLAY ON SCREEN
 						((TextView) findViewById(R.id._name)).setText(json
 								.getString("title"));
@@ -258,7 +259,8 @@ public class MainActivity extends Activity {
 			toast.show();
 		}
 	}
-
+	
+	// GET FAVORITES FUNCTION
 	@SuppressWarnings("unchecked")
 	private HashMap<String, String> getFavorites() {
 		Object stored = FileFunctions.readObjectFile(_context, "favorites",
@@ -279,6 +281,8 @@ public class MainActivity extends Activity {
 		return favorites;
 	}
 
+	// GET OUR TEMP STRING FROM STORAGE
+	// TEMP STRING HOLDS THE MOST RECENT SEARCHED FOR MOVIE
 	private String getTemp() {
 		Object tempStored = FileFunctions
 				.readStringFile(_context, "temp", true);
@@ -319,8 +323,8 @@ public class MainActivity extends Activity {
 							Toast.LENGTH_SHORT);
 					toast.show();
 				} else {
-					JSONObject results = json.getJSONArray("movies").getJSONObject(
-							0);
+					JSONObject results = json.getJSONArray("movies")
+							.getJSONObject(0);
 					FileFunctions.storeStringFile(_context, "temp",
 							results.toString(), true);
 					updateData(results);
